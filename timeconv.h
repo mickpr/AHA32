@@ -1,11 +1,3 @@
-/*********************************************
- * vim:sw=8:ts=8:si:et
- * To use the above modeline in vim you must have "set modeline" in your .vimrc
- * Author: Guido Socher
- * Copyright: GPL V2
- *
- *********************************************/
-//@{
 #ifndef TIMECONVERSIONS_H
 #define TIMECONVERSIONS_H
 
@@ -17,4 +9,3 @@ extern uint8_t gmtime(const uint32_t time,char *day, char *clock);
 
 
 #endif /* TIMECONVERSIONS_H */
-//@}

@@ -1,6 +1,4 @@
 
-
-
 -------- A U T O R Y Z A C J A --------
 Mozna zrobic tak, ze podczas logowania (strona logowania) bedzie zapamietany MAC/IP klienta.  
 Kazda strona bedzie odpowiadala jesli MAC/IP jest zgodny (strona logowania zawsze).

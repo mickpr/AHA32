@@ -1,5 +1,4 @@
 /*********************************************
- *
  * Author: Guido Socher
  * Copyright: GPL V2
  * See http://www.gnu.org/licenses/gpl.html

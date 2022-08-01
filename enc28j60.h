@@ -16,9 +16,6 @@
 #define CSACTIVE ENC28J60_CONTROL_PORT&=~(1<<ENC28J60_CONTROL_CS)
 // set CS to 1 = passive
 #define CSPASSIVE ENC28J60_CONTROL_PORT|=(1<<ENC28J60_CONTROL_CS)
-//
-
-
 
 // ENC28J60 Control Registers
 // Control register definitions are a combination of address,

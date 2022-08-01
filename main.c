@@ -387,13 +387,12 @@ int main()
 	TIMSK = 0x00;
 	delay_ms(50);
 
-
 	uart_init();
 	sei();                                     //enable global interrupts
 
-	uart_send_string_from_FLASH(PSTR("Starting...\r\n"));
+	uart_send_string_from_FLASH(PSTR("Starting...\r\n")); 
 	//uart_print("Starting...\n\r");
-	wdt_enable(WDTO_1S);
+	wdt_enable(WDTO_1S);	// watchdog enabled
 
 	timer_init();
 	//pwm_init();

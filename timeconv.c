@@ -1,12 +1,5 @@
-/*********************************************
- * vim:sw=8:ts=8:si:et
- * To use the above modeline in vim you must have "set modeline" in your .vimrc
- * Author: Guido Socher
- * Copyright: GPL V2
- * See http://www.gnu.org/licenses/gpl.html
- *
- * functions to convert ntp timestamps into time and date
- *********************************************/
+// functions to convert ntp timestamps into time and date 
+
 #include <avr/io.h>
 #include <stdio.h>
 #include <inttypes.h>
