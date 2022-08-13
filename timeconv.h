@@ -6,6 +6,6 @@
 #define GETTIMEOFDAY_TO_NTP_OFFSET 2208988800UL
 
 extern uint8_t gmtime(const uint32_t time,char *day, char *clock);
-
+extern uint8_t winter_summer_time_correction(uint32_t * time);
 
 #endif /* TIMECONVERSIONS_H */

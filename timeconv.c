@@ -97,13 +97,14 @@ uint8_t winter_summer_time_correction(uint32_t * time) {
 	uint32_t dayclock;
     uint16_t dayno;
 	uint16_t tm_year = EPOCH_YR;
-	uint8_t tm_sec,tm_min,tm_hour,tm_wday,tm_mon;
+	//uint8_t tm_sec,tm_min;
+	uint8_t tm_hour,tm_wday,tm_mon;
 
 	dayclock = *time % SECS_DAY;
 	dayno = *time / SECS_DAY;
 
-	tm_sec = dayclock % 60UL;
-	tm_min = (dayclock % 3600UL) / 60;
+	//tm_sec = dayclock % 60UL;
+	//tm_min = (dayclock % 3600UL) / 60;
 	tm_hour = dayclock / 3600UL;
 
 	tm_wday = (dayno + 4) % 7;	/* day 0 was a thursday */

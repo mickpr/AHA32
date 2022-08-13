@@ -22,6 +22,7 @@
 #include "pwm.h"
 #include "timeconv.h"
 #include "webpages.h"
+#include "lcd.h"
 
 // definiowanie statycznej tablicy string we flash
 #define P(name)   static const prog_uchar name[] PROGMEM  // declare a static string
@@ -96,8 +97,8 @@ char *odczyt_temp() {
   owire_reset();
   owire_write_byte(0xCC);       // rozkaz pomin ROM
   owire_write_byte(0xBE);       // rozkaz umozliwiajacy odczytanie temperatury
-  lsb = owire_read_byte();      // odczytanie mlodszych bitów temperatury
-  msb = owire_read_byte();      // odczytanie starszych bitów temperatury
+  lsb = owire_read_byte();      // odczytanie mlodszych bitï¿½w temperatury
+  msb = owire_read_byte();      // odczytanie starszych bitï¿½w temperatury
 
 
   temp=(float)(lsb+(msb<<8))/16;
@@ -158,10 +159,6 @@ uint16_t moved_perm(uint8_t *buf)
         return(plen);
 }
 
-uint16_t http200ok(void)
-{
-        return(fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nPragma: no-cache\r\n\r\n")));
-}
 
 
 uint16_t http401unauthorized(void)
@@ -177,7 +174,7 @@ uint16_t print_webpage(uint8_t *buf,uint8_t on_off)
         uint16_t plen;
         char clock[12];
 
-        plen=http200ok();
+        plen=http200ok((uint8_t*)buf);
         plen=fill_tcp_data_p(buf,plen,PSTR("<html><head><link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\" /></head><body><center>"));
         plen=fill_tcp_data_p(buf,plen,PSTR("<script>document.write(\"<table height=35%><tr><td></td></tr></table>\");</script>"));
         plen=fill_tcp_data_p(buf,plen,PSTR("<div class=\"divhead\">Device 1</div>"));
@@ -540,20 +537,20 @@ int main()
 					// just an ack with no data, wait for next packet
 					continue;
 				}
-				// jeli strona z has³em POST-owana (nie GET) czyli podano has³o...
+				// jeli strona z hasï¿½em POST-owana (nie GET) czyli podano hasï¿½o...
 				if (strncmp("POST /passwd",(char *)&(buf[dat_p]),12)==0){
 					// head, post and other methods:
 					//
 					// for possible status codes see:
 					// http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-					pchr=strstr(&buf[dat_p],"Content-Length:"); // 15 len of that string!
+					pchr=strstr((const char*)&buf[dat_p],"Content-Length:"); // 15 len of that string!
 					//uart_printf("Size:|%d|\r\n",atoi(&pchr[15])); //(0..14 is string)...15 is outside
 					i=atoi(&pchr[15]);
 					pchr=strstr(pchr,"\r\n\r\n"); // first is after Pragma:no-cache, we search after Content-Length...
 					pchr=pchr+4;
 //					{	uint8_t j=0;
 //					 	while (j<i) {
-//					 		uart_printf("%c",pchr[j]); // drukuj liniê komend (passwd=dupa+pawiana (urlencode/decode))
+//					 		uart_printf("%c",pchr[j]); // drukuj liniï¿½ komend (passwd=dupa+pawiana (urlencode/decode))
 //					 	 	j++; }
 //					}
 					i=i-7;
@@ -568,7 +565,7 @@ int main()
 					goto SENDTCP;
 				}
 
-				// jeli strona z has³em POST-owana (nie GET) czyli podano has³o...
+				// jeli strona z hasï¿½em POST-owana (nie GET) czyli podano hasï¿½o...
 				if (strncmp("POST /ipconfig",(char *)&(buf[dat_p]),14)==0){
 					// head, post and other methods:
 					//
@@ -584,7 +581,7 @@ int main()
 //					pchr=pchr+4;
 ////					{	uint8_t j=0;
 ////					 	while (j<i) {
-////					 		uart_printf("%c",pchr[j]); // drukuj liniê komend (passwd=dupa+pawiana (urlencode/decode))
+////					 		uart_printf("%c",pchr[j]); // drukuj liniï¿½ komend (passwd=dupa+pawiana (urlencode/decode))
 ////					 	 	j++; }
 ////					}
 //					i=i-7;
@@ -605,27 +602,27 @@ int main()
 					//
 					// for possible status codes see:
 					// http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-					plen=http200ok();
+					plen=http200ok(buf);
 					plen=fill_tcp_data_p(buf,plen,PSTR("<html><HEAD><BODY><H1>200 OK</h1></body></html>"));
 
 					goto SENDTCP;
 				}
 
 				if ((strncmp("/style.css",(char *)&(buf[dat_p+4]),10)==0) || (strncmp("/sw/style.css",(char *)&(buf[dat_p+4]),13)==0)) {
-					plen=print_style_css(buf);
+					plen=print_style_css((uint8_t *)buf);
 					goto SENDTCP;
 				}
 
 
 				// strony/pliki bez autoryzacji musza byc wczesniej
 				if (strncmp("/ ",(char *)&(buf[dat_p+4]),2)==0){
-					plen=print_login_page(buf);
+					plen=print_login_page((uint8_t *)buf);
 					goto SENDTCP;
 				}
 
 				if (is_client_authorized(buf,authorized_client_ip)==0) {
 					uart_printf("Unauthorized entry event\r\n");
-					plen=http200ok();
+					plen=http200ok(buf);
 					plen=fill_tcp_data_p(buf,plen,PSTR("<html><HEAD><BODY><H1>Unauthorized!</h1></body></html>"));
 					goto SENDTCP;
 				}
@@ -650,7 +647,7 @@ int main()
 				// http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 				if (cmd==-1){
 					plen=http401unauthorized();
-					//plen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Nieautoryzowany dostêp.</h1>"));
+					//plen=fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 401 Unauthorized\r\nContent-Type: text/html\r\n\r\n<h1>401 Nieautoryzowany dostï¿½p.</h1>"));
 					goto SENDTCP;
 				}
 
@@ -714,7 +711,7 @@ SENDTCP:
 				//uart_printf("command length=%d (B).\r",i);
 				decode_execute_and_response_tcp_command((char *)command);
 				plen=fill_tcp_data(buf,0,(char *)command); // to wysle, ale bez '\0'!!!
-				// dlatego bardzo wa¿ne jest, zeby wyslany ciag mial znak konca wiersza,
+				// dlatego bardzo waï¿½ne jest, zeby wyslany ciag mial znak konca wiersza,
 				// inaczej klient (ReadLn) go nie odbierze !!!
 				plen=fill_tcp_data_p(buf,plen,PSTR("\n")); // na koncu znak \n
 //ANSWERTCP:

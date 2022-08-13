@@ -1,5 +1,5 @@
 #include "uart.h"
-
+#include <string.h>
 uint8_t uartbuf[6];
 uint8_t rx_pointer =0;
 
@@ -36,12 +36,12 @@ uint8_t uart_receive()
 
 ISR(USART_RXC_vect)
 {
-	uint8_t i;
+   // uint8_t i;
    char ReceivedByte;
    ReceivedByte = UDR; // Fetch the received byte value into the variable "ByteReceived"
    //UDR = ReceivedByte; // Echo back the received byte back to the computer
 
-   if ((ReceivedByte >='0') && (ReceivedByte<='9') ||(ReceivedByte=='#')) {
+   if (((ReceivedByte >='0') && (ReceivedByte<='9')) ||(ReceivedByte=='#')) {
 	   uartbuf[0]=uartbuf[1];
    	   uartbuf[1]=uartbuf[2];
    	   uartbuf[2]=uartbuf[3];
@@ -51,18 +51,18 @@ ISR(USART_RXC_vect)
    if (ReceivedByte=='#') {
 	   uart_printf("Bufor: %s\n\r",uartbuf);
    }
-   if (strncmp(uartbuf,"8877#",5)==0) {
+   if (strncmp((char *)uartbuf,"8877#",5)==0) {
 
 	   uart_printf("Correct code\n\r");
 	   PORTD |=  (1<<PORTD6);
-	   delay_ms(500);
+	   _delay_ms(500);
 	   PORTD &= ~(1<<PORTD6); // or 6
    }
 }
 
 
 //Function to transmit a string in Flash
-void uart_send_string_from_FLASH(char* string)
+void uart_send_string_from_FLASH(const char* string)
 {
   while (pgm_read_byte(&(*string)))
    uart_send(pgm_read_byte(&(*string++)));
@@ -78,12 +78,13 @@ void uart_send_string(unsigned char* string)
 int uart_printf (const char *fmt, ...)
 {
    va_list args;
-   uint8_t i;
+   //uint8_t i;
    char printbuffer[64];
 
    va_start (args, fmt);
    // For this to work, printbuffer must be larger than anything we ever want to print.
-   i = vsprintf (printbuffer, fmt, args);
+   //i =
+   vsprintf (printbuffer, fmt, args);
    va_end (args);
 
    // Print the string

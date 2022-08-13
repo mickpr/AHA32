@@ -17,7 +17,7 @@
 void uart_init(void);
 void uart_send(uint8_t u8Data);
 uint8_t uart_receive();
-void uart_send_string_from_FLASH(char* string);
+void uart_send_string_from_FLASH(const char* string);
 void uart_send_string(unsigned char* string);
 int uart_printf (const char *fmt, ...);
 

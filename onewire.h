@@ -1,6 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 
 #define DQ 6
 #define SET_DQ 	DDRD &= ~_BV(DQ)
